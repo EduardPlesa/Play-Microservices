@@ -12,26 +12,25 @@ namespace Play.Common.MongoDB
             dbCollection = database.GetCollection<T>(collectionName);
         }
 
+        public async Task<IReadOnlyCollection<T>> GetAllAsync()
+        {
+            return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
+        }
+
+        public async Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            return await dbCollection.Find(filter).ToListAsync();
+        }
 
         public async Task<T> GetAsync(Guid id)
         {
             FilterDefinition<T> filter = filterBuilder.Eq(entity => entity.Id, id);
             return await dbCollection.Find(filter).SingleOrDefaultAsync();
         }
-        
-         public async Task<T> GetAsync(Guid id)
-        {
-            FilterDefinition<T> filter = filterBuilder.Eq(entity => entity.Id, id);
-            return await dbCollection.Find(filter).SingleOrDefaultAsync();
-        }
-         public async Task<IReadOnlyCollection<T>> GetAllAsync()
-        {
-            return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
-        }
 
-         public async Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter)
         {
-            return await dbCollection.Find(filter ?? filterBuilder.Empty).ToListAsync();
+            return await dbCollection.Find(filter).SingleOrDefaultAsync();
         }
 
         public async Task CreateAsync(T entity)
